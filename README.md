@@ -6,6 +6,8 @@ A simple task manager API built with Python and FastAPI.
 
 - Create a task with a title.
 - View all tasks.
+- Update a task's title using its ID.
+- Delete a task using its ID.
 - Return an error for an empty or invalid title.
 
 Tasks are temporarily stored in a Python list. They are cleared when the server restarts.
@@ -27,8 +29,10 @@ Open http://127.0.0.1:8000/docs to try the API.
 | --- | --- | --- |
 | POST | `/create` | Create a task |
 | GET | `/tasks` | View all tasks |
+| PUT | `/update?id=1` | Update the title of the task with ID 1 |
+| DELETE | `/delete?id=1` | Delete the task with ID 1 |
 
-Example request body for creating a task:
+Example request body for creating or updating a task:
 
 ```json
 {
