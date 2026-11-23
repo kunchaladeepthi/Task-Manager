@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/script.js" defer></script>
+</head>
+<body>
+    <main>
+        <h1>Task Manager</h1>
+        <form id="task-form">
+            <div class="title-field">
+                <label for="title">Task title</label>
+                <input id="title" placeholder="Enter task title" minlength="2" required>
+            </div>
+            <div>
+                <label for="priority">Priority</label>
+                <select id="priority">
+                    <option>High</option>
+                    <option selected>Medium</option>
+                    <option>Low</option>
+                </select>
+            </div>
+            <button id="save-button" type="submit">Add task</button>
+            <button id="cancel-button" type="button" class="secondary" hidden>Cancel</button>
+        </form>
+        <p id="message" role="status"></p>
+        <h2>Your tasks</h2>
+        <p id="empty-state" hidden>No tasks yet.</p>
+        <ul id="task-list"></ul>
+        <nav id="pager" hidden>
+            <button type="button" id="prev-page" class="secondary" aria-label="Previous page">&larr;</button>
+            <span id="page-info"></span>
+            <button type="button" id="next-page" class="secondary" aria-label="Next page">&rarr;</button>
+        </nav>
+    </main>
+
+    <template id="task-template">
+        <li class="task">
+            <div class="task-info">
+                <span class="task-title"></span>
+                <span class="priority"></span>
+            </div>
+            <div class="actions">
+                <button type="button" class="edit secondary">Edit</button>
+                <button type="button" class="delete">Delete</button>
+            </div>
+        </li>
+    </template>
+</body>
+</html>

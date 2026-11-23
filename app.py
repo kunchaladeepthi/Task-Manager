@@ -1,15 +1,20 @@
+import math
 import sqlite3
 from pathlib import Path
 from typing import Literal
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Query
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import JSONResponse
+from fastapi.responses import FileResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 app = FastAPI()
+frontend_path = Path(__file__).with_name("static")
+app.mount("/static", StaticFiles(directory=frontend_path), name="static")
 
 database_path = Path(__file__).with_name("tasks.db")
+PAGE_SIZE = 6
 
 
 def get_connection():
@@ -51,7 +56,7 @@ class TaskInput(BaseModel):
 
 @app.get("/")
 def home():
-    return {"message": "Task Manager API is running!"}
+    return FileResponse(frontend_path / "index.html")
 
 
 @app.post("/create", status_code=201)
@@ -70,11 +75,23 @@ def create_task(data: TaskInput):
 
 
 @app.get("/tasks")
-def get_tasks():
+def get_tasks(page: int = Query(1, ge=1)):
     connection = get_connection()
-    tasks = connection.execute("SELECT * FROM tasks ORDER BY id").fetchall()
+    total = connection.execute("SELECT COUNT(*) FROM tasks").fetchone()[0]
+    total_pages = max(1, math.ceil(total / PAGE_SIZE))
+    page = min(page, total_pages)
+    tasks = connection.execute(
+        "SELECT * FROM tasks ORDER BY id LIMIT ? OFFSET ?",
+        (PAGE_SIZE, (page - 1) * PAGE_SIZE),
+    ).fetchall()
     connection.close()
-    return [dict(task) for task in tasks]
+
+    return {
+        "tasks": [dict(task) for task in tasks],
+        "page": page,
+        "total_pages": total_pages,
+        "total": total,
+    }
 
 @app.put("/update")
 def update_task(id: int, data: TaskInput):
